@@ -1,101 +1,103 @@
-import React from "react";
+import React, { useState } from "react";
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
-import { auth, createUserProfileDocument } from "../../firebase/firebase.utils";
+import { auth, createUserProfileDoc } from "../../firebase/firebase.utils";
 import "./sign-up.styles.scss";
 
-class SignUp extends React.Component {
-  constructor() {
-    super();
+const SignUp = () => {
+  const [credenciais, setCredenciais] = useState({
+    nome: "",
+    email: "",
+    senha: "",
+    confirmaSenha: "",
+  });
 
-    this.state = {
-      displayName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    };
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  handleSubmit = async (event) => {
-    event.preventDefault();
+    const { nome, email, senha, confirmaSenha } = credenciais;
 
-    const { displayName, email, password, confirmPassword } = this.state;
-
-    if (password !== confirmPassword) {
+    if (senha !== confirmaSenha) {
       alert("Senhas não combinam!");
       return;
     }
 
-    try {//verifica se o usuário existe
+    try {
+      //verifica se o usuário existe
       const { user } = await auth.createUserWithEmailAndPassword(
         email,
-        password
+        senha,
       );
 
-      //cria o uusário com e-mail e senha
-      await createUserProfileDocument(user, { displayName });
+      //cria o usuário com e-mail e senha
+      await createUserProfileDoc(user, { nome });
 
-      this.setState({
-        displayName: "",
+      setCredenciais({
+        nome: "",
         email: "",
-        password: "",
-        confirmPassword: ""
+        senha: "",
+        confirmaSenha: "",
       });
     } catch (error) {
       console.error(error);
     }
   };
 
-  handleChange = (event) => {
-    const { name, value } = event.target;
-    
-    this.setState({ [name]: value });
+  /*Função handleChange é executada a cada tecla pressionada para atualizar 
+  o estado do React que é atualizado conforme o usuário digita.*/
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setCredenciais({ [name]: value });
   };
 
-  render() {
-    const { displayName, email, password, confirmPassword } = this.state;
-    return (
-      <div className="sign-up">
-        <h2 className="title">Não tenho uma conta</h2>
-        <span>Entre com seu e-mail e senha</span>
-        <form className="sign-up-form" onSubmit={this.handleSubmit}>
-          <FormInput
-            type="text"
-            name="displayName"
-            value={displayName}
-            onChange={this.handleChange}
-            label="Nome"
-            required
-          />
-          <FormInput
-            type="email"
-            name="email"
-            value={email}
-            onChange={this.handleChange}
-            label="Email"
-            required
-          />
-          <FormInput
-            type="password"
-            name="password"
-            value={password}
-            onChange={this.handleChange}
-            label="Senha"
-            required
-          />
-          <FormInput
-            type="password"
-            name="confirmPassword"
-            value={confirmPassword}
-            onChange={this.handleChange}
-            label="Confirmar Senha"
-            required
-          />
-          <CustomButton type="submit">Criar Conta</CustomButton>
-        </form>
-      </div>
-    );
-  }
-}
+  const {
+    nome,
+    email,
+    senha,
+    confirmaSenha,
+  } = credenciais;
+  return (
+    <div className="sign-up">
+      <h2 className="title">Não tenho uma conta</h2>
+      <span>Entre com seu e-mail e senha</span>
+      <form className="sign-up-form" onSubmit={handleSubmit}>
+        <FormInput
+          type="text"
+          name="displayName"
+          value={nome}
+          onChange={handleChange}
+          label="Nome"
+          required
+        />
+        <FormInput
+          type="email"
+          name="email"
+          value={email}
+          onChange={handleChange}
+          label="E-mail"
+          required
+        />
+        <FormInput
+          type="password"
+          name="password"
+          value={senha}
+          onChange={handleChange}
+          label="Senha"
+          required
+        />
+        <FormInput
+          type="password"
+          name="confirmPassword"
+          value={confirmaSenha}
+          onChange={handleChange}
+          label="Confirmar Senha"
+          required
+        />
+        <CustomButton type="submit">Criar Conta</CustomButton>
+      </form>
+    </div>
+  );
+};
 
 export default SignUp;

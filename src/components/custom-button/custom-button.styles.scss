@@ -1,33 +1,47 @@
 $verde: #2f9e41;
+$red: #cd191e;
+$verde95: #ebf9ee;
 
 .custom-button {
-  min-width: 165px;
-  width: auto;
-  height: 50px;
-  letter-spacing: 0.5px;
-  line-height: 50px;
-  padding: 0 35px 0 35px;
-  font-size: 15px;
+  min-width: 80px;
+  height: 40px;
+  //letter-spacing: -0.5px;
+  //line-height: 50px;
+  padding: 5px;
+  margin: 10px;
+  font-size: 13px;
   background-color: black;
   color: white;
   text-transform: uppercase;
-  font-family: "Big Shoulders Display";
+  font-family: "Open Sans Condensed";
   font-weight: bolder;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
+
+  &:disabled{
+    background-color: $red;
+    border: none;
+  }
+
+  &:disabled:hover {
+    background-color: $red;
+    border: none;
+  }
 
   &:hover {
     background-color: white;
-    color: black;
-    border: 1px solid black;
+    color: $verde;
+    border: 1px solid $verde;
   }
 
   &.google-sign-in {
     background-color: $verde;
     color: white;
     border: none;
+    padding: 10px;
 
-    &:hover{
+    &:hover {
       background-color: white;
       color: $verde;
       border: 1px solid $verde;

@@ -2,7 +2,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
 
-const config = {
+/* const config = {
   apiKey: "AIzaSyCUy0_no9Y8znFJdR860fG_Cw3xUud53Bc",
   authDomain: "ifativ.firebaseapp.com",
   projectId: "ifativ",
@@ -10,42 +10,51 @@ const config = {
   messagingSenderId: "281727825456",
   appId: "1:281727825456:web:a47ca1ddd49a36dabc1ff5",
   measurementId: "G-PKC1PMY93D",
-};
+}; */
 
-export const createUserProfileDocument = async (userAuth, additionalData) => {
+const config = {
+  apiKey: "AIzaSyD7S8SJtgwbnyzWi1CWE5wIu3YjT_EfHuM",
+    authDomain: "ifativ2.firebaseapp.com",
+    projectId: "ifativ2",
+    storageBucket: "ifativ2.appspot.com",
+    messagingSenderId: "819992546669",
+    appId: "1:819992546669:web:6d6b10c99f19da87289e64",
+    measurementId: "G-6TKQQKE7CY"
+}
+export const createUserProfileDoc = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
-  //console.log(firestore.doc('users/abcd1234'));
-
-  const userRef = firestore.doc(`users/${userAuth.uid}`); //localização do usuário
-  const snapShot = await userRef.get(); //pega os dados do usuário
-
-  //console.log(snapShot);
+  const usuarioRef = firestore.doc(`usuarios/${userAuth.uid}`); //localização do usuário
+  const snapShot = await usuarioRef.get(); //pega os dados do usuário
 
   //Cria usuário
   if (!snapShot.exists) {
     const { displayName, email } = userAuth;
-    const createdAt = new Date();
+    const criacao = new Date();
+
     try {
-      await userRef.set({
+      await usuarioRef.set({
         displayName,
         email,
-        createdAt,
+        mediador: false,
+        criacao,
         ...additionalData,
       });
-  //Fim cria usuário
+      //Fim cria usuário
     } catch (error) {
       console.log("erro ao criar usuário", error.message);
     }
   }
   //console.log(userRef);
-    return userRef; //retorna tudo(displayName, email, createdAt, etc...) para userRef
+  return usuarioRef; //retorna tudo(displayName, email, createdAt, etc...) para userRef
 };
 
 firebase.initializeApp(config);
 
-export const auth = firebase.auth();
 export const firestore = firebase.firestore();
+export const auth = firebase.auth();
+export const increment = firebase.firestore.FieldValue.increment;
+export const FieldValue = firebase.firestore.FieldValue;
 
 const provider = new firebase.auth.GoogleAuthProvider(); //Google Autenticantion
 provider.setCustomParameters({ prompt: "select_account" }); //aciona o Google pop-up para autenticação

@@ -1,10 +1,10 @@
 import React from "react";
 import "./homepage.styles.scss";
-import Card from '../../components/card/card.component';
+import CadastroEventos from "../../components/evento/cadastro-eventos.component";
 
 const HomePage = () => (
-  <div className="homepage">
-    <Card />
+  <div>
+    <CadastroEventos />
   </div>
 );
 
