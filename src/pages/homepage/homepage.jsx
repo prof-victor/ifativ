@@ -1,10 +1,11 @@
 import React from "react";
-import "./homepage.styles.scss";
-import CadastroEventos from "../../components/evento/cadastro-eventos.component";
+import SignIn from "../../components/sign-in/sign-in.component";
+import SignUp from "../../components/sign-up/sign-up.component";
 
 const HomePage = () => (
-  <div>
-    <CadastroEventos />
+  <div className="sign-in-sign-up">
+    <SignIn />
+    <SignUp />
   </div>
 );
 

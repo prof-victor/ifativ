@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from "react";
-import "./inscricao.styles.scss";
+import React, { useEffect, useState, useContext } from "react";
 import {
   firestore,
-  auth,
   increment,
   FieldValue,
+  AuthContext,
 } from "../../firebase/firebase.utils";
 import CustomButton from "../custom-button/custom-button.component";
-import { Ring } from "react-spinners-css";
+import { Icon } from "semantic-ui-react";
 
 const Inscricao = () => {
-  const [usuarioAutenticado, setUsuarioAutenticado] = useState(null);
+  const { usuario } = useContext(AuthContext);
   const [atividades, setAtividades] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,19 +28,9 @@ const Inscricao = () => {
     return unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((userAuth) => {
-      if (userAuth) {
-        setUsuarioAutenticado(userAuth);
-      }
-    });
-
-    return unsubscribe();
-  }, []);
-
   const handleSubmit = async (id) => {
     const usuarioInscritoRef = firestore.doc(
-      `usuarios/${usuarioAutenticado.uid}/inscritos/${id}`
+      `usuarios/${usuario.uid}/inscritos/${id}`
     );
     const snapshot = await usuarioInscritoRef.get();
     const ref = firestore.doc(`atividades/${id}`);
@@ -49,7 +38,6 @@ const Inscricao = () => {
     const decrement = increment(-1);
 
     if (!snapshot.exists) {
-      //console.log("Não existe");
       await ref
         .update({
           vaga: decrement,
@@ -62,8 +50,8 @@ const Inscricao = () => {
 
       await ref.update({
         inscritos: FieldValue.arrayUnion({
-          label: usuarioAutenticado.displayName,
-          value: usuarioAutenticado.uid,
+          label: usuario.displayName,
+          value: usuario.uid,
         }),
       });
       alert("Inscrição realizada com sucesso!");
@@ -74,7 +62,7 @@ const Inscricao = () => {
 
   return (
     <div>
-      <h2 style={{ textAlign: "center" }}>Atividades para inscrição:</h2>
+      <div className="titulo-text">Atividades para inscrição:</div>
       {!loading ? (
         <div className="container">
           {atividades.map(
@@ -118,7 +106,9 @@ const Inscricao = () => {
           )}
         </div>
       ) : (
-        <Ring color="#2f9e41" />
+        <div style={{ textAlign: "center" }}>
+          <Icon loading name="spinner" size="huge" color="green" />
+        </div>
       )}
     </div>
   );

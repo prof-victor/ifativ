@@ -5,7 +5,7 @@ import { firestore, auth } from "../../firebase/firebase.utils";
 
 const Certificado = () => {
   const [usuarioAutenticado, setUsuarioAutenticado] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [certificados, setCertificados] = useState([]);
 
   useEffect(() => {
@@ -16,10 +16,7 @@ const Certificado = () => {
     });
 
     const unsubscribe = async () => {
-      setLoading(true);
-
       const ref = await firestore.collection("atividades").get();
-
       const snapshot = ref.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -29,12 +26,12 @@ const Certificado = () => {
       setLoading(false);
     };
 
-    return () => unsubscribe();
+    return unsubscribe();
   });
 
   return (
     <div align="center">
-      <h1>CERTIFICADO</h1>
+      <div className="titulo-text">CERTIFICADO</div>
       <div style={{ fontSize: "30px", lineHeight: "150%" }}>
         Certificamos que: <br />
         {certificados.map(({ presentes }) =>

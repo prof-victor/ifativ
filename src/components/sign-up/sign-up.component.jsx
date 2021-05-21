@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 import { auth, createUserProfileDoc } from "../../firebase/firebase.utils";
-import "./sign-up.styles.scss";
 
 const SignUp = () => {
   const [credenciais, setCredenciais] = useState({
@@ -23,13 +22,7 @@ const SignUp = () => {
     }
 
     try {
-      //verifica se o usuário existe
-      const { user } = await auth.createUserWithEmailAndPassword(
-        email,
-        senha,
-      );
-
-      //cria o usuário com e-mail e senha
+      const { user } = await auth.createUserWithEmailAndPassword(email, senha);
       await createUserProfileDoc(user, { nome });
 
       setCredenciais({
@@ -43,24 +36,16 @@ const SignUp = () => {
     }
   };
 
-  /*Função handleChange é executada a cada tecla pressionada para atualizar 
-  o estado do React que é atualizado conforme o usuário digita.*/
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     setCredenciais({ [name]: value });
   };
 
-  const {
-    nome,
-    email,
-    senha,
-    confirmaSenha,
-  } = credenciais;
+  const { nome, email, senha, confirmaSenha } = credenciais;
   return (
-    <div className="sign-up">
-      <h2 className="title">Não tenho uma conta</h2>
-      <span>Entre com seu e-mail e senha</span>
+    <div className="signup">
+      <div>Criar uma conta</div>
       <form className="sign-up-form" onSubmit={handleSubmit}>
         <FormInput
           type="text"
@@ -84,6 +69,7 @@ const SignUp = () => {
           value={senha}
           onChange={handleChange}
           label="Senha"
+          autoComplete="on"
           required
         />
         <FormInput
@@ -92,6 +78,7 @@ const SignUp = () => {
           value={confirmaSenha}
           onChange={handleChange}
           label="Confirmar Senha"
+          autoComplete="on"
           required
         />
         <CustomButton type="submit">Criar Conta</CustomButton>

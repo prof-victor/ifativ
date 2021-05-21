@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { firestore } from "../../firebase/firebase.utils";
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
-import { Ring } from "react-spinners-css";
-import "semantic-ui-css/semantic.min.css";
+import { Icon } from "semantic-ui-react";
 
 const CadastroEventos = () => {
   const estadoInicialEventos = {
@@ -19,7 +18,6 @@ const CadastroEventos = () => {
 
   useEffect(() => {
     const unsubscribe = async () => {
-      //setLoading(true);
       const eventosRef = await firestore.collection("eventos").get();
 
       const snapshot = eventosRef.docs.map((doc) => ({
@@ -37,14 +35,10 @@ const CadastroEventos = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEventos({ ...eventos, [name]: value });
-    //console.log(name + ": " + value);
   };
 
   const EventoAdd = async (e) => {
-    //alert([titulo, mediador, data]);
-    //alert(JSON.stringify(activities));
     e.preventDefault();
-
     const eventosRef = firestore.collection("eventos");
     try {
       await eventosRef.add({
@@ -79,13 +73,11 @@ const CadastroEventos = () => {
     alert("Evento atualizado com sucesso!");
   };
 
-  //console.log(usuarios);
-
   return (
     <div>
       <div>
         <form onSubmit={EventoAdd}>
-          <h2 style={{ textAlign: "center" }}>Cadastro de Eventos</h2>
+          <div className="titulo-text">Cadastro de Eventos</div>
           <FormInput
             type="text"
             name="nome"
@@ -111,13 +103,17 @@ const CadastroEventos = () => {
                 <div className="titulo">{nome.toUpperCase()}</div>
                 <br />
                 <div style={{ textAlign: "center" }}>
-                  <i
-                    className="huge pencil icon edit-delete-icons"
+                  <Icon
+                    className="edit-delete-icons"
+                    name="edit"
+                    size="big"
                     type="submit"
                     onClick={() => EventoUpdate(id)}
                   />
-                  <i
-                    className="huge trash icon edit-delete-icons"
+                  <Icon
+                    className="edit-delete-icons"
+                    name="delete"
+                    size="big"
                     type="submit"
                     onClick={() => EventoDelete(id)}
                   />
@@ -126,7 +122,9 @@ const CadastroEventos = () => {
             ))}
           </div>
         ) : (
-          <Ring color="#2f9e41" />
+          <div style={{ textAlign: "center" }}>
+            <Icon loading name="spinner" size="huge" color="green" />
+          </div>
         )}
       </div>
     </div>

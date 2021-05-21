@@ -1,6 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
+import React, { useEffect, useState, createContext } from "react";
 
 /* const config = {
   apiKey: "AIzaSyCUy0_no9Y8znFJdR860fG_Cw3xUud53Bc",
@@ -14,13 +15,14 @@ import "firebase/auth";
 
 const config = {
   apiKey: "AIzaSyD7S8SJtgwbnyzWi1CWE5wIu3YjT_EfHuM",
-    authDomain: "ifativ2.firebaseapp.com",
-    projectId: "ifativ2",
-    storageBucket: "ifativ2.appspot.com",
-    messagingSenderId: "819992546669",
-    appId: "1:819992546669:web:6d6b10c99f19da87289e64",
-    measurementId: "G-6TKQQKE7CY"
-}
+  authDomain: "ifativ2.firebaseapp.com",
+  projectId: "ifativ2",
+  storageBucket: "ifativ2.appspot.com",
+  messagingSenderId: "819992546669",
+  appId: "1:819992546669:web:6d6b10c99f19da87289e64",
+  measurementId: "G-6TKQQKE7CY",
+};
+
 export const createUserProfileDoc = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
@@ -37,6 +39,7 @@ export const createUserProfileDoc = async (userAuth, additionalData) => {
         displayName,
         email,
         mediador: false,
+        admin: false,
         criacao,
         ...additionalData,
       });
@@ -47,6 +50,29 @@ export const createUserProfileDoc = async (userAuth, additionalData) => {
   }
   //console.log(userRef);
   return usuarioRef; //retorna tudo(displayName, email, createdAt, etc...) para userRef
+};
+
+export const AuthContext = createContext();
+
+export const AuthProvider = (props) => {
+  const { children } = props;
+  const [usuario, setUsuario] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      setUsuario(user);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return <div>loading</div>;
+  }
+
+  return (
+    <AuthContext.Provider value={{ usuario }}>{children}</AuthContext.Provider>
+  );
 };
 
 firebase.initializeApp(config);

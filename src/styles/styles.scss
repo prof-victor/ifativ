@@ -1,0 +1,300 @@
+$verde95: #ebf9ee;
+$verde: #2f9e41;
+$verde-light: #73d884;
+$red: #cd191e;
+$sub-color: grey;
+$main-color: #73d884;
+
+.container {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-rows: 1fr;
+}
+
+.cards {
+  cursor: pointer;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 10px;
+  background-color: #d8f3de;
+  border-style: dashed;
+  border-color: $verde;
+  //border: 1px solid #2f9e41;
+  //background: linear-gradient(#2f9e41, #ebf9ee);
+
+  &:hover {
+    background-color: $verde;
+    border-color: #d8f3de;
+    color: white;
+  }
+}
+
+form {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.4fr);
+  justify-content: center; 
+  margin-top: 10px; 
+}
+
+.descricao{
+  height: 135px;
+  margin-top: 5px;
+  margin-bottom: 5px; 
+}
+
+.titulo {
+  background-color: #b0e8ba;
+  color: $red;
+  text-align: center;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  padding: 3px;
+}
+
+.edit-delete-icons {
+  cursor: pointer;
+  color: black;
+
+  &:hover {
+    color: white;
+  }
+}
+
+.titulo-text {
+  text-align: center;
+  font-size: 18px;
+  margin: 10px 0px 15px 0px;
+}
+
+//signin-signup
+.signin, .signup {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 18px;
+}
+
+//custom-button
+.custom-button {
+  min-width: 80px;
+  height: 40px;
+  //letter-spacing: -0.5px;
+  //line-height: 50px;
+  padding: 5px;
+  margin: 10px;
+  font-size: 13px;
+  background-color: black;
+  color: white;
+  text-transform: uppercase;
+  font-family: "Open Sans Condensed";
+  font-weight: bolder;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+
+  &:disabled{
+    background-color: $red;
+    border: none;
+  }
+
+  &:disabled:hover {
+    background-color: $red;
+    border: none;
+  }
+
+  &:hover {
+    background-color: white;
+    color: $verde;
+    border: 1px solid $verde;
+  }
+
+  &.google-sign-in {
+    background-color: $verde;
+    color: white;
+    border: none;
+    padding: 10px;
+
+    &:hover {
+      background-color: white;
+      color: $verde;
+      border: 1px solid $verde;
+    }
+  }
+}
+
+//form-input
+@mixin shrinkLabel {
+  top: -15px;
+  font-size: 12px;
+  color: $main-color;
+}
+
+.group {
+  position: relative;
+  margin: 20px;
+
+  .form-input {
+    background: none;
+    background-color: white;
+    color: $sub-color;
+    font-size: 18px;
+    padding: 10px;
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid $sub-color;
+    margin: 5px 0;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus ~ .form-input-label {
+      @include shrinkLabel();
+    }
+  }
+
+  input[type='password'] {
+    letter-spacing: 0.3em;
+  }
+
+  .form-input-label {
+    color: $sub-color;
+    font-size: 16px;
+    font-weight: normal;
+    position: absolute;
+    pointer-events: none;
+    left: 5px;
+    top: -15px;
+    transition: 300ms ease all;
+
+    &.shrink {
+      @include shrinkLabel();
+    }
+  }
+}
+
+//header
+.wrapper-header {
+  display: flex;
+  flex-wrap: wrap;
+  height: 80px;
+  background: $verde;
+  color: white;
+
+  @media (max-width: 480px) {
+    height: 100px;
+  }
+}
+
+.header1 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+  order: 1;
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+.header2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  order: 2;
+
+  @media (max-width: 350px) {
+    flex-direction: column;
+  }
+}
+
+.header3 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  order: 3;
+  margin-right: 6px;
+}
+
+.option-header {
+  /* display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, auto)); */
+  display: flex;
+  justify-content: center;
+  padding: 7px;
+  border-radius: 4px;
+  color: white;
+
+  &:hover {
+    background-color: white;
+    color: $verde;
+  }
+}
+
+.login-logoff {
+  /* display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, auto)); */
+  display: flex;
+  justify-content: center;
+  padding: 7px;
+  border-radius: 4px;
+  color: white;
+
+  &:hover {
+    background-color: white;
+    color: $verde;
+  }
+}
+
+/* .circle-header {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  font-size: 16px;
+  background: $verde-light;
+  line-height: 70px;
+  text-align: center;
+  color: $red;
+} */
+
+.wrapper-status {
+  display: flex;
+  flex-wrap: wrap;
+  background: $verde-light;
+  color: red;
+  font-size: 14px;
+}
+.campus {
+  display: flex;
+  flex: 1;
+  order: 1;
+  justify-content: flex-start;
+  padding: 0px 0px 5px 5px;
+}
+.usuario {
+  display: flex;
+  flex: 1;
+  order: 2;
+  justify-content: flex-end;
+  padding: 0px 5px 5px 0px;
+}
+.versao{
+  display: flex;
+  flex: 1;
+  order: 2;
+  justify-content: center;
+}
+
+
+//homepage
+.homepage {
+  width: 850px;
+  display: flex;
+  justify-content: space-between;
+  margin: 30px auto;
+}

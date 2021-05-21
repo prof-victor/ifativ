@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-import { auth, createUserProfileDoc, AuthProvider } from "./firebase/firebase.utils";
+import {
+  auth,
+  createUserProfileDoc,
+  AuthProvider,
+  AuthContext,
+} from "./firebase/firebase.utils";
 //import { connect } from "react-redux";
 //import { setCurrentUser } from "./redux/user/user.actions";
 import Header from "./components/header/header.component";
@@ -10,23 +15,20 @@ import CadastroEventosPage from "./pages/evento/cadastro-eventos.page";
 import CadastroAtividadesPage from "./pages/atividade/cadastro-atividades.page";
 import InscricaoPage from "./pages/inscricao/inscricao.page";
 import FrequenciaPage from "./pages/frequencia/frequencia.page";
-//import CertificadoPage from "./pages/certificado/certificado.page";
+import CertificadoPage from "./pages/certificado/certificado.page";
 import { GlobalStyle } from "./global.styles";
 
-class App extends React.Component {
-  state = {
-    currentUser: null,
-  };
+const App = ({ currentUser }) => {
+  const { usuario } = useContext(AuthContext);
+  const [user, setUser] = useState(null);
 
-  unsubscribeFromAuth = null;
-
-  componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-      if (userAuth) {
+  useEffect(() => {
+    const unsubscribe = async () => {
+      if (usuario) {
         const userRef = await createUserProfileDoc(userAuth);
 
         userRef.onSnapshot((snapShot) => {
-          this.setState({
+          setUser({
             currentUser: {
               id: snapShot.id,
               ...snapShot.data(),
@@ -34,41 +36,36 @@ class App extends React.Component {
           });
         });
       }
-      this.setState({ currentUser: userAuth });
+      setUser({ currentUser: userAuth });
       //console.log(userAuth.uid);
-    });
-  }
+    };
 
-  componentWillUnmount() {
-    this.unsubscribeFromAuth();
-  }
+    return unsubscribe();
+  }, []);
 
-  render() {
-    const { currentUser } = this.props;
-    return (
-      <div>
-        <GlobalStyle />
-        <AuthProvider>
-          <Header currentUser={this.state.currentUser} />
-          <Switch>
-            <Route exact path="/" component={HomePage} />
-            <Route path="/evento" component={CadastroEventosPage} />
-            <Route path="/atividade" component={CadastroAtividadesPage} />
-            <Route path="/inscricao" component={InscricaoPage} />
-            <Route path="/frequencia" component={FrequenciaPage} />
-            {/* <Route path="/certificado" component={CertificadoPage} /> */}
-            <Route
-              path="/signin-signup"
-              render={() =>
-                currentUser ? <Redirect to="/" /> : <SignInSignUpPage />
-              }
-            />
-          </Switch>
-        </AuthProvider>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <GlobalStyle />
+      <AuthProvider>
+        <Header currentUser={currentUser} />
+        <Switch>
+          <Route exact path="/" component={HomePage} />
+          <Route path="/evento" component={CadastroEventosPage} />
+          <Route path="/atividade" component={CadastroAtividadesPage} />
+          <Route path="/inscricao" component={InscricaoPage} />
+          <Route path="/frequencia" component={FrequenciaPage} />
+          <Route path="/certificado" component={CertificadoPage} />
+          <Route
+            path="/signin-signup"
+            render={() =>
+              currentUser ? <Redirect to="/" /> : <SignInSignUpPage />
+            }
+          />
+        </Switch>
+      </AuthProvider>
+    </div>
+  );
+};
 
 /* const mapStateToProps = ({ user }) => ({
   currentUser: user.currentUser,

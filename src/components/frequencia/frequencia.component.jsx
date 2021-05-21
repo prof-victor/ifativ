@@ -1,30 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { firestore, auth } from "../../firebase/firebase.utils";
-import { Ring } from "react-spinners-css";
+import React, { useEffect, useState, useContext } from "react";
+import { firestore, AuthContext } from "../../firebase/firebase.utils";
+import { Icon } from "semantic-ui-react";
 import CustomButton from "../custom-button/custom-button.component";
 import MultiSelect from "react-multi-select-component";
 
 const Frequencia = () => {
-  const [usuarioAutenticado, setUsuarioAutenticado] = useState(null);
+  const { usuario } = useContext(AuthContext);
   const [listaFrequencias, setListaFrequencias] = useState([]);
   const [gravaFrequencias, setGravaFrequencias] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((userAuth) => {
-      if (userAuth) {
-        setUsuarioAutenticado(userAuth);
-      }
-    });
-
-    return unsubscribe();
-  }, []);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = async () => {
       const ref = await firestore
         .collection("atividades")
-        .where("mediador", "==", usuarioAutenticado)
+        .where("mediador", "==", usuario.displayName)
         .get();
 
       const snapshot = ref.docs.map((doc) => ({
@@ -33,25 +23,24 @@ const Frequencia = () => {
       }));
 
       setListaFrequencias(snapshot);
+      setLoading(false);
     };
 
     return unsubscribe();
-  }, [usuarioAutenticado]);
+  });
 
   const handleSubmit = async (id) => {
     const ref = firestore.doc(`atividades/${id}`);
     await ref.update({
       presentes: gravaFrequencias,
     });
-
-    //alert(JSON.stringify(listaFrequencias));
   };
 
   return (
     <div>
-      <h2 style={{ textAlign: "center" }}>
+      <div className="titulo-text">
         Atividades em que você é mediador(a) para verificar a frequência:&nbsp;
-      </h2>
+      </div>
       {!loading ? (
         <form>
           <div className="container">
@@ -61,7 +50,7 @@ const Frequencia = () => {
                   {titulo.toUpperCase()}
                   <div>Mediador(a): {mediador}</div>
                 </div>
-                <div>
+                <div style={{ color: "black" }}>
                   <MultiSelect
                     options={inscritos}
                     onChange={setGravaFrequencias}
@@ -82,8 +71,8 @@ const Frequencia = () => {
           </div>
         </form>
       ) : (
-        <div>
-          <Ring color="#2f9e41" />
+        <div style={{ textAlign: "center" }}>
+          <Icon loading name="spinner" size="huge" color="green" />
         </div>
       )}
     </div>

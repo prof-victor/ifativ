@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { firestore, auth } from "../../firebase/firebase.utils";
+import { firestore } from "../../firebase/firebase.utils";
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
-import { Ring } from "react-spinners-css";
-import "./activity.styles.scss";
-import "semantic-ui-css/semantic.min.css";
-//import Select from 'react-select';
+import { Icon } from "semantic-ui-react";
+import "../../styles/styles.scss";
 
 const CadastroAtividades = () => {
   const estadoInicialAtividades = {
@@ -16,7 +14,7 @@ const CadastroAtividades = () => {
     descricao: "",
     data: "",
     horario: "",
-    vaga: 0,
+    vaga: "",
     local: "",
   };
 
@@ -78,7 +76,7 @@ const CadastroAtividades = () => {
 
       const usuariosRef = await firestore
         .collection("usuarios")
-        //.where("mediador", "==", true)
+        .where("mediador", "==", true)
         .get();
 
       const snapshot3 = usuariosRef.docs.map((doc) => ({
@@ -96,16 +94,10 @@ const CadastroAtividades = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAtividades({ ...atividades, [name]: value });
-    //console.log(name + ": " + value);
-    //console.log(atividades);
   };
 
   const AtividadeAdd = async (e) => {
-    //alert([titulo, mediador, data]);
-    //alert(JSON.stringify(activities));
     e.preventDefault();
-
-    // console.log(atividades.eventoId);
 
     const atividadesRef = firestore.collection("atividades");
     try {
@@ -116,7 +108,7 @@ const CadastroAtividades = () => {
         descricao: descricao,
         data: data,
         horario: horario,
-        vaga: vaga,
+        vaga: parseInt(vaga),
         local: local,
       });
       setAtividades(estadoInicialAtividades);
@@ -167,143 +159,155 @@ const CadastroAtividades = () => {
 
   return (
     <div>
-      <div>
-        <form onSubmit={AtividadeAdd}>
-          <h2 style={{ textAlign: "center" }}>Cadastro de Atividades</h2>
-          <label>Selecione o evento: </label>
-          <select name="eventoId" onChange={handleChange}>
-            <option></option>
-            {eventos.map(({ id, nome }) => (
-              <option key={id} value={id}>
-                {nome}
-              </option>
-            ))}
-          </select>
+      {!loading ? (
+        <div>
+          <form onSubmit={AtividadeAdd}>
+            <div className="titulo-text">Cadastro de Atividades</div>
+            <label>Selecione o evento: </label>
+            <select name="eventoId" onChange={handleChange} required>
+              <option></option>
+              {eventos.map(({ id, nome }) => (
+                <option key={id} value={id}>
+                  {nome}
+                </option>
+              ))}
+            </select>
+            <br />
+            <FormInput
+              type="text"
+              name="titulo"
+              value={titulo}
+              onChange={handleChange}
+              label="Título"
+              maxLength="100"
+              placeholder="Máx 100 caracteres"
+            />
+            <label>Selecione o(a) mediador(a): </label>
+            <select name="mediador" onChange={handleChange} required>
+              <option></option>
+              {usuarios.map(({ id, displayName }) => (
+                <option key={id} value={displayName}>
+                  {displayName}
+                </option>
+              ))}
+            </select>
+            <br />
+            <label>Descrição: </label>
+            <textarea
+              name="descricao"
+              value={descricao}
+              rows="4"
+              maxLength="300"
+              placeholder="Máx 300 caracteres"
+              onChange={handleChange}
+            />
+            <FormInput
+              type="date"
+              name="data"
+              value={data}
+              onChange={handleChange}
+              label="Data"
+            />
+            <FormInput
+              type="time"
+              name="horario"
+              value={horario}
+              onChange={handleChange}
+              label="Horário:"
+            />
+            <FormInput
+              type="number"
+              name="vaga"
+              value={vaga}
+              onChange={handleChange}
+              label="Vagas"
+            />
+            <label>Selecione o local: </label>
+            <select name="local" onChange={handleChange} required>
+              <option></option>
+              {localSelecionado.map(({ id, local }) => (
+                <option key={id} value={local}>
+                  {local}
+                </option>
+              ))}
+            </select>
+            <br />
+            <CustomButton type="submit">Cadastrar Nova Atividade</CustomButton>
+          </form>
           <br />
-          <FormInput
-            type="text"
-            name="titulo"
-            value={titulo}
-            onChange={handleChange}
-            label="Título"
-            maxLength="100"
-            placeholder="Máx 100 caracteres"
-          />
-          <label>Selecione o(a) mediador(a): </label>
-          <select name="mediador" onChange={handleChange}>
-            <option></option>
-            {usuarios.map(({ id, displayName }) => (
-              <option key={id} value={displayName}>
-                {displayName}
-              </option>
-            ))}
-          </select>
-          <br />
-          <label>Descrição: </label>
-          <textarea
-            name="descricao"
-            value={descricao}
-            rows="4"
-            maxLength="300"
-            placeholder="Máx 300 caracteres"
-            onChange={handleChange}
-          />
-          <FormInput
-            type="date"
-            name="data"
-            value={data}
-            onChange={handleChange}
-            label="Data"
-          />
-          <FormInput
-            type="time"
-            name="horario"
-            value={horario}
-            onChange={handleChange}
-            label="Horário:"
-          />
-          <FormInput
-            type="number"
-            name="vaga"
-            value={vaga}
-            onChange={handleChange}
-            label="Vagas"
-          />
-          <label>Selecione o local: </label>
-          <select name="local" onChange={handleChange}>
-            <option></option>
-            {localSelecionado.map(({ id, local }) => (
-              <option key={id} value={local}>
-                {local}
-              </option>
-            ))}
-          </select>
-          <br />
-          <CustomButton type="submit">Cadastrar Nova Atividade</CustomButton>
-        </form>
-        <br />
+        </div>
+      ) : (
+        <div style={{ textAlign: "center" }}>
+          <Icon loading name="spinner" size="huge" color="green" />
+        </div>
+      )}
 
-        {!loading ? (
-          <div className="container">
-            {atividadesUsuario.map(
-              ({
-                id,
-                eventoId,
-                titulo,
-                mediador,
-                descricao,
-                data,
-                horario,
-                vaga,
-                local,
-              }) => (
-                <div
-                  className="cards"
-                  key={id}
-                  onClick={() =>
-                    SelecionaAtividade(
-                      id,
-                      eventoId,
-                      titulo,
-                      mediador,
-                      descricao,
-                      data,
-                      horario,
-                      vaga,
-                      local
-                    )
-                  }
-                >
-                  <div className="titulo">Título: {titulo.toUpperCase()}</div>
-                  <div>Mediador: {mediador.toUpperCase()}</div>
-                  <div className="descricao" style={{ textAlign: "justify" }}>
-                    Descrição: {descricao}
-                  </div>
-                  <div>Data: {data}</div>
-                  <div>Horario: {horario}</div>
-                  <div>Vagas: {vaga}</div>
-                  <div>Local: {local}</div>
-                  <br />
-                  <div style={{ textAlign: "center" }}>
-                    <i
-                      className="huge pencil icon edit-delete-icons"
-                      type="submit"
-                      onClick={() => AtividadeUpdate(id)}
-                    />
-                    <i
-                      className="huge trash icon edit-delete-icons"
-                      type="submit"
-                      onClick={() => AtividadeDelete(id)}
-                    />
-                  </div>
+      {!loading ? (
+        <div className="container">
+          {atividadesUsuario.map(
+            ({
+              id,
+              eventoId,
+              titulo,
+              mediador,
+              descricao,
+              data,
+              horario,
+              vaga,
+              local,
+            }) => (
+              <div
+                className="cards"
+                key={id}
+                onClick={() =>
+                  SelecionaAtividade(
+                    id,
+                    eventoId,
+                    titulo,
+                    mediador,
+                    descricao,
+                    data,
+                    horario,
+                    vaga,
+                    local
+                  )
+                }
+              >
+                <div className="titulo">Título: {titulo.toUpperCase()}</div>
+                <div>Mediador: {mediador.toUpperCase()}</div>
+                <div className="descricao" style={{ textAlign: "justify" }}>
+                  Descrição: {descricao}
                 </div>
-              )
-            )}
-          </div>
-        ) : (
-          <Ring color="#2f9e41" />
-        )}
-      </div>
+                <div>Data: {data}</div>
+                <div>Horario: {horario}</div>
+                <div>Vagas: {vaga}</div>
+                <div>Local: {local}</div>
+                <br />
+                <div style={{ textAlign: "center" }}>
+                  <Icon
+                    className="edit-delete-icons"
+                    name="edit"
+                    size="big"
+                    type="submit"
+                    onClick={() => AtividadeUpdate(id)}
+                  />
+                  <Icon
+                    className="edit-delete-icons"
+                    name="delete"
+                    size="big"
+                    type="submit"
+                    onClick={() => AtividadeDelete(id)}
+                  />
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      ) : (
+        <div style={{ textAlign: "center" }}>
+          <Icon loading name="spinner" size="huge" color="green" />
+        </div>
+      )}
     </div>
   );
 };

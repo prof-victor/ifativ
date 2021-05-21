@@ -20,7 +20,7 @@ const AtividadesUsuario = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      // console.log(snapshot); //não funciona, somente com o observer
+    
       setUsuarioAtividades(snapshot);
       setLoading(false);
     };

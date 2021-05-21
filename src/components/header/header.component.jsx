@@ -1,81 +1,98 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 //import { connect } from "react-redux";
 import { ReactComponent as Logo } from "../../assets/logo.svg";
-import { auth, firestore } from "../../firebase/firebase.utils";
-import "./header.styles.scss";
+import { auth, firestore, AuthContext } from "../../firebase/firebase.utils";
 
-const Header = ({ currentUser, userAuth }) => {
-  const [isMediador, setIsMediador] = useState(false);
-  const [usuarioAutenticado, setUsuarioAutenticado] = useState(null);
-  //const [usuarioAutenticadoName, setUsuarioAutenticadoName] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((userAuth) => {
-      if (userAuth) {
-        setUsuarioAutenticado(userAuth);
-      }
-    });
-
-    return unsubscribe();
-  }, []);
+const Header = () => {
+  const { usuario } = useContext(AuthContext);
+  const [isMediador, setIsMediador] = useState([]);
+  const [isAdmin, setIsAdmin] = useState([]);
 
   useEffect(() => {
-    if (usuarioAutenticado != null) {
+    if (usuario != null) {
       const unsubscribe = async () => {
-        await firestore
-          .doc(`usuarios/${usuarioAutenticado.uid}`)
-          .get()
-          .then((doc) => {
-            if (doc.exists) {
-              setIsMediador(doc.data());
-            } else {
-              console.log("Usuário não é Mediador(a)", usuarioAutenticado.uid);
-            }
-          });
-      };
+        const mediadorRef = await firestore
+          .doc(`usuarios/${usuario.uid}`)
+          .get();
 
+        setIsMediador(mediadorRef.data());
+      };
       return unsubscribe();
     }
-  }, [usuarioAutenticado]);
+  }, [usuario]);
 
-  const { mediador } = isMediador;
- 
+  useEffect(() => {
+    if (usuario != null) {
+      const unsubscribe = async () => {
+        const adminRef = await firestore.doc(`usuarios/${usuario.uid}`).get();
+
+        setIsAdmin(adminRef.data());
+      };
+      return unsubscribe();
+    }
+  });
+
   return (
-    <div className="header">
-      <Link className="logo-container" to="/">
-        <Logo />
-      </Link>
-      <div className="options">
-        <Link className="option" to="/evento">
-          EVENTO
-        </Link>
-        <Link className="option" to="/atividade">
-          ATIVIDADE
-        </Link>
-        <Link className="option" to="/inscricao">
-          INSCRIÇÃO
-        </Link>
-        {mediador === true ? (
-          <Link className="option" to="/frequencia">
-            FREQUÊNCIA
+    <div>
+      <div className="wrapper-header">
+        <div className="header1">
+          <Link to="/">
+            <Logo />
           </Link>
-        ) : null}
-        {currentUser ? (
-          <div className="option" onClick={() => auth.signOut()}>
-            SAIR
+        </div>
+        {usuario && isAdmin.admin === true ? (
+          <div className="header2">
+            <Link className="option-header" to="/inscricao">
+              INSCRIÇÃO
+            </Link>
+            <Link className="option-header" to="/evento">
+              EVENTO
+            </Link>
+            <Link className="option-header" to="/atividade">
+              ATIVIDADE
+            </Link>
+          </div>
+        ) : usuario && isMediador.mediador === true ? (
+          <div className="header2">
+            <Link className="option-header" to="/inscricao">
+              INSCRIÇÃO
+            </Link>
+            <Link className="option-header" to="/frequencia">
+              FREQUÊNCIA
+            </Link>
           </div>
         ) : (
-          <Link className="option" to="/signin-signup">
-            ENTRAR
-          </Link>
+          <div className="header2">
+            <Link className="option-header" to="/inscricao">
+              INSCRIÇÃO
+            </Link>
+          </div>
         )}
-        {usuarioAutenticado ? (
-          <div className="circle-with-text">
-            {usuarioAutenticado.displayName.split(" ")[0]}
-          </div>
+        <div className="header3">
+          {usuario ? (
+            <Link
+              className="login-logoff"
+              onClick={() => auth.signOut()}
+              to="signin-signup"
+            >
+              Sair
+              {/*usuario.displayName.split(" ")[0]*/}
+            </Link>
+          ) : (
+            <Link className="login-logoff" to="signin-signup">
+              Entrar
+            </Link>
+          )}
+        </div>
+      </div>
+      <div className="wrapper-status">
+        <div className="campus"> Campus Paracambi</div>
+        <div className="versao"> versão 0.11</div>
+        {usuario ? (
+          <div className="usuario">{usuario.displayName}</div>
         ) : (
-          <div className="circle-with-text">Faça o Login</div>
+          <div className="usuario">Offline</div>
         )}
       </div>
     </div>
